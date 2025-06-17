@@ -10,6 +10,10 @@ flutter/ephemeral/
 x64/
 x86/
 
+README*
+README
+README.md
+
 # Visual Studio cache files
 # files ending in .cache can be ignored
 *.[Cc]ache
