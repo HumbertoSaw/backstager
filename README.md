@@ -1,7 +1,7 @@
 ## 🎭 BackStager ⭐
 "Break a leg!" - The BackStager Team
 
-![banner](/assets/git_banner.png)
+![banner](backstager/assets/git_banner.png)
 
 Stager is a Flutter application designed to help the teathre community.
 The app provides an intuitive way to categorize media files into folders corresponding to different shows, acts, or scenes.
