@@ -41,9 +41,6 @@ class _AddFilesViewState extends State<AddFilesView> {
 
   Future<void> _saveFiles() async {
     if (_selectedFiles.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('No files to save')));
       return;
     }
 
@@ -59,17 +56,12 @@ class _AddFilesViewState extends State<AddFilesView> {
         await savedFilesDir.create(recursive: true);
       }
 
-      int successCount = 0;
-
       for (final file in _selectedFiles) {
         try {
           final originalFile = File(file.path!);
           final newFile = File('${savedFilesDir.path}/${file.name}');
-
           await originalFile.copy(newFile.path);
           await originalFile.delete();
-
-          successCount++;
         } catch (e) {
           debugPrint('Error moving file ${file.name}: $e');
         }
@@ -79,15 +71,15 @@ class _AddFilesViewState extends State<AddFilesView> {
         _selectedFiles.clear();
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Saved $successCount/${_selectedFiles.length} files'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Files saved!')));
+      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error saving files: $e')));
+      Navigator.pop(context);
     } finally {
       setState(() {
         _isSaving = false;
@@ -107,9 +99,10 @@ class _AddFilesViewState extends State<AddFilesView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'No files selected',
-                          style: Theme.of(context).textTheme.titleMedium,
+                        Icon(
+                          Icons.folder_off_sharp,
+                          size: 50,
+                          color: const Color.fromARGB(255, 165, 165, 165),
                         ),
                       ],
                     ),
