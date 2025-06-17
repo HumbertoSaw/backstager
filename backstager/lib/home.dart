@@ -3,6 +3,7 @@ import 'package:backstager/add_files_view.dart';
 import 'package:backstager/components/edit_file_component.dart';
 import 'package:backstager/controllers/directory_controller.dart.dart';
 import 'package:backstager/models/media_folder.dart';
+import 'package:backstager/play_audio_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
@@ -349,7 +350,33 @@ class _HomeViewState extends State<HomeView> {
           return Card(
             child: InkWell(
               onTap: () {
-                OpenFile.open(file.path);
+                // OpenFile.open(file.path);
+
+                Navigator.push(
+                  context,
+                  PageRouteBuilder(
+                    pageBuilder: (context, animation, secondaryAnimation) =>
+                        PlayAudioView(audioFile: file as File),
+                    transitionsBuilder:
+                        (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.ease;
+
+                          final tween = Tween(
+                            begin: begin,
+                            end: end,
+                          ).chain(CurveTween(curve: curve));
+                          final offsetAnimation = animation.drive(tween);
+
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                    transitionDuration: const Duration(milliseconds: 300),
+                  ),
+                );
               },
               onLongPress: () {
                 _showFileContextMenu(file as File, context);
