@@ -39,6 +39,8 @@ class _PlayAudioViewState extends State<PlayAudioView> {
 
   final MediaClipDao clipDao = MediaClipDao(DatabaseConn.instance);
   List<MediaClip> _clips = [];
+  int? _selectedClipId;
+
   bool _isLoading = true;
 
   @override
@@ -134,6 +136,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: Text(widget.file.name)),
       body: Padding(
         padding: const EdgeInsets.only(top: 20.0),
@@ -158,7 +161,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
             ),
             const SizedBox(height: 20),
             _createClipButton(context),
-            const SizedBox(height: 14),
+            const SizedBox(height: 10),
             _clipList(),
           ],
         ),
@@ -213,21 +216,47 @@ class _PlayAudioViewState extends State<PlayAudioView> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: _clips.map((clip) {
-                  return Card(
-                    elevation: 0,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: _parseColor(clip.color),
-                        width: 2,
+                  final isSelected = _selectedClipId == clip.id;
+
+                  return GestureDetector(
+                    onTap: () {
+                      setState(() {
+                        _selectedClipId = isSelected ? null : clip.id;
+                      });
+                    },
+                    child: Card(
+                      elevation: 0,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: _parseColor(clip.color),
+                          width: 2,
+                        ),
                       ),
-                    ),
-                    child: ListTile(
-                      leading: Icon(Icons.cut, color: _parseColor(clip.color)),
-                      title: Text(clip.name),
-                      subtitle: Text(
-                        '${clip.startAt.toStringAsFixed(2)}s - ${clip.endAt.toStringAsFixed(2)}s',
+                      color: isSelected ? _parseColor(clip.color) : null,
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.cut,
+                          color: isSelected
+                              ? Colors.white
+                              : _parseColor(clip.color),
+                        ),
+                        title: Text(
+                          clip.name,
+                          style: TextStyle(
+                            color: isSelected ? Colors.white : Colors.black,
+                          ),
+                        ),
+                        subtitle: Text(
+                          '${clip.startAt.toStringAsFixed(2)}s - ${clip.endAt.toStringAsFixed(2)}s',
+                          style: TextStyle(
+                            color: isSelected
+                                ? const Color.fromARGB(210, 255, 255, 255)
+                                : Colors.black54,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   );
@@ -276,6 +305,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
 
   Slider _seekBar() {
     return Slider(
+      inactiveColor: Colors.grey,
       onChanged: (value) {
         final duration = _duration;
         if (duration == null) return;
@@ -320,7 +350,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
         IconButton(
           icon: Icon(
             Icons.loop,
-            color: _isLooping ? Colors.blueAccent : Colors.grey,
+            color: _isLooping ? Theme.of(context).primaryColor : Colors.grey,
           ),
           onPressed: () {
             setState(() {
