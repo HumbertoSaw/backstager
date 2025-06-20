@@ -48,8 +48,10 @@ class DatabaseConn {
       CREATE TABLE clips (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         fileId INTEGER NOT NULL,
+        name TEXT NOT NULL,
         startAt REAL NOT NULL,
         endAt REAL NOT NULL,
+        color TEXT,
         FOREIGN KEY (fileId) REFERENCES files (id) ON DELETE CASCADE
       )
     ''');

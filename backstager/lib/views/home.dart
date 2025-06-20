@@ -13,6 +13,7 @@ import 'package:backstager/models/MediaFile.dart';
 import 'package:backstager/models/MediaFolder.dart';
 import 'package:backstager/views/add_files_view.dart';
 import 'package:backstager/views/folder_content_view.dart';
+import 'package:backstager/views/play_audio_view.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/material.dart';
 import 'package:mime/mime.dart';
@@ -186,7 +187,13 @@ class _HomeViewState extends State<HomeView> {
               borderRadius: BorderRadius.circular(4),
             ),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                final audioFile = File(file.filePath.toString());
+                CustomNavigator.pushWithSlideTransition(
+                  context,
+                  PlayAudioView(audioFile: audioFile, file: file),
+                );
+              },
               onLongPress: () {
                 _showFileOptionsMenu(context, file);
               },
