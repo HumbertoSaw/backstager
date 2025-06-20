@@ -7,7 +7,8 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
 class AddFilesView extends StatefulWidget {
-  const AddFilesView({super.key});
+  final void Function() onFilesAdded;
+  const AddFilesView({super.key, required this.onFilesAdded});
 
   @override
   _AddFilesViewState createState() => _AddFilesViewState();
@@ -90,7 +91,7 @@ class _AddFilesViewState extends State<AddFilesView> {
       setState(() {
         _selectedFiles.clear();
       });
-
+      widget.onFilesAdded();
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Files saved successfully!')));

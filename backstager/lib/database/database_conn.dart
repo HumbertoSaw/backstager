@@ -54,7 +54,7 @@ class DatabaseConn {
       )
     ''');
 
-    await _insertDummyData(db);
+    // await _insertDummyData(db);
   }
 
   Future<void> clearDatabase() async {

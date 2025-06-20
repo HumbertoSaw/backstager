@@ -1,23 +1,23 @@
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
-import 'package:backstager/models/MediaFile.dart';
+import 'package:backstager/models/MediaFolder.dart';
 import 'package:flutter/material.dart';
 
-class DeleteFileComponent extends StatefulWidget {
-  final MediaFile file;
-  final VoidCallback? onFileDeleted;
+class DeleteFolderComponent extends StatefulWidget {
+  final MediaFolder folder;
+  final VoidCallback? onFolderDeleted;
 
-  const DeleteFileComponent({
+  const DeleteFolderComponent({
     super.key,
-    required this.file,
-    this.onFileDeleted,
+    required this.folder,
+    this.onFolderDeleted,
   });
 
   @override
-  State<DeleteFileComponent> createState() => _DeleteFileComponentState();
+  State<DeleteFolderComponent> createState() => _DeleteFolderComponentState();
 }
 
-class _DeleteFileComponentState extends State<DeleteFileComponent> {
+class _DeleteFolderComponentState extends State<DeleteFolderComponent> {
   bool _isSaving = false;
 
   final MediaFileDao fileDao = MediaFileDao(DatabaseConn.instance);
@@ -32,18 +32,18 @@ class _DeleteFileComponentState extends State<DeleteFileComponent> {
     super.dispose();
   }
 
-  Future<void> _deleteFile() async {
+  Future<void> _deleteFolder() async {
     setState(() => _isSaving = true);
 
     try {
-      await fileDao.deleteMediaFile(widget.file.id!);
+      await fileDao.deleteMediaFile(widget.folder.id!);
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('File deleted successfully')));
+      ).showSnackBar(SnackBar(content: Text('Folder deleted successfully')));
 
-      if (widget.onFileDeleted != null) {
-        widget.onFileDeleted!();
+      if (widget.onFolderDeleted != null) {
+        widget.onFolderDeleted!();
       }
       Navigator.pop(context);
     } catch (e) {
@@ -59,16 +59,12 @@ class _DeleteFileComponentState extends State<DeleteFileComponent> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text(
-        'Delete File',
+        'Delete Folder',
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            "Remove this file from app storage? The original file will stay on your device.",
-          ),
-        ],
+        children: [Text("Remove this folder from app storage?")],
       ),
       actions: [
         TextButton(
@@ -76,7 +72,7 @@ class _DeleteFileComponentState extends State<DeleteFileComponent> {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: _isSaving ? null : _deleteFile,
+          onPressed: _isSaving ? null : _deleteFolder,
           child: const Text('Save'),
         ),
       ],

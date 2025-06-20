@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:backstager/components/file_components/delete_file_component.dart';
 import 'package:backstager/components/folder_components/create_folder_component.dart';
 import 'package:backstager/components/file_components/edit_file_component.dart';
+import 'package:backstager/components/folder_components/delete_folder_component.dart';
 import 'package:backstager/components/folder_components/edit_folder_component.dart';
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
@@ -279,7 +281,14 @@ class _HomeViewState extends State<HomeView> {
       children: [
         FloatingActionButton.extended(
           onPressed: () {
-            CustomNavigator.pushWithSlideTransition(context, AddFilesView());
+            CustomNavigator.pushWithSlideTransition(
+              context,
+              AddFilesView(
+                onFilesAdded: () {
+                  _loadFilesAndFolders();
+                },
+              ),
+            );
           },
           heroTag: 'add_files',
           backgroundColor: Theme.of(context).primaryColor,
@@ -348,7 +357,20 @@ class _HomeViewState extends State<HomeView> {
                 'Delete',
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.pop(context);
+                showDialog(
+                  context: context,
+                  builder: (context) => DeleteFolderComponent(
+                    folder: folder,
+                    onFolderDeleted: _loadFilesAndFolders,
+                  ),
+                ).then((value) {
+                  if (value == true) {
+                    _loadFilesAndFolders();
+                  }
+                });
+              },
             ),
             SizedBox(height: 30.0),
           ],
@@ -403,7 +425,20 @@ class _HomeViewState extends State<HomeView> {
                   'Delete',
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => DeleteFileComponent(
+                      file: file,
+                      onFileDeleted: _loadFilesAndFolders,
+                    ),
+                  ).then((value) {
+                    if (value == true) {
+                      _loadFilesAndFolders();
+                    }
+                  });
+                },
               ),
               ListTile(
                 leading: Icon(
