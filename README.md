@@ -3,8 +3,13 @@
 
 ![banner](backstager/assets/git_banner.png)
 
-Stager is a Flutter application designed to help the teathre community.
-The app provides an intuitive way to categorize media files into folders corresponding to different shows, acts, or scenes.
+BackStager is a powerful, purpose-built Flutter application crafted specifically for the theater community. It's more than just a media organizer — it's your backstage assistant, designed to bring order, speed, and customization to the creative chaos of rehearsing.
+
+With BackStager, users can effortlessly organize media files into fully customizable folders, tailored to the unique needs of each performer. But what truly sets it apart is its built-in audio player, complete with a Clip Highlights feature — empowering users to capture and save the most critical, memorable, or useful moments from any audio file in just a tap.
+
+Whether it's saving cue lines, sound effects, or musical cues, BackStager puts creative control in the hands of any theater junkie.
+
+This isn’t just an app — it’s the next must-have tool for your next rehearsal.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
