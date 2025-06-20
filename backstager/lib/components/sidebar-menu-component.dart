@@ -1,4 +1,4 @@
-import 'package:backstager/add_files_view.dart';
+import 'package:backstager/views/add_files_view.dart';
 import 'package:flutter/material.dart';
 
 class SidebarMenuComponent extends StatelessWidget {

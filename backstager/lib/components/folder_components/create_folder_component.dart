@@ -1,17 +1,15 @@
 import 'dart:io';
+import 'package:backstager/database/database_conn.dart';
+import 'package:backstager/database/folder_dao.dart';
+import 'package:backstager/models/MediaFolder.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
 class CreateFolderComponent extends StatefulWidget {
   final void Function() onFolderCreated;
-  final Directory? parentDirectory;
 
-  const CreateFolderComponent({
-    super.key,
-    required this.onFolderCreated,
-    this.parentDirectory,
-  });
+  const CreateFolderComponent({super.key, required this.onFolderCreated});
 
   @override
   State<CreateFolderComponent> createState() => _CreateFolderComponentState();
@@ -21,6 +19,8 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
   final TextEditingController _nameController = TextEditingController();
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+
+  final MediaFolderDao folderDao = MediaFolderDao(DatabaseConn.instance);
 
   @override
   void dispose() {
@@ -39,34 +39,31 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
         throw Exception('Folder name cannot be empty');
       }
 
-      final validName = name.replaceAll(RegExp(r'[^\w-]'), '_');
-
-      final parentDir =
-          widget.parentDirectory ??
-          Directory(
-            '${(await getApplicationDocumentsDirectory()).path}/saved_media_files',
-          );
-
-      final folderDir = Directory('${parentDir.path}/$validName');
-
-      if (await folderDir.exists()) {
-        throw Exception('A folder with this name already exists');
-      }
-
-      await folderDir.create(recursive: true);
+      String? imagePath;
 
       if (imageFile != null) {
+        final appDir = await getApplicationDocumentsDirectory();
+        final imagesDir = Directory('${appDir.path}/folder_covers');
+        if (!await imagesDir.exists()) {
+          await imagesDir.create();
+        }
+
         final ext = imageFile.path.split('.').last;
-        final imagePath = '${folderDir.path}/folder_image.$ext';
-        await imageFile.copy(imagePath);
+        final fileName = '${DateTime.now().millisecondsSinceEpoch}.$ext';
+        final savedImage = await imageFile.copy('${imagesDir.path}/$fileName');
+        imagePath = savedImage.path;
       }
+
+      final newFolder = MediaFolder(name: name, coverImagePath: imagePath);
+
+      await folderDao.insertMediaFolder(newFolder);
 
       widget.onFolderCreated();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Folder "$validName" created successfully'),
+            content: Text('Folder "$name" created successfully'),
             behavior: SnackBarBehavior.floating,
           ),
         );
