@@ -65,3 +65,5 @@ Before you begin, ensure you have met the following requirements:
   ```terminal
   flutter build apk --release
   ```
+
+made with ❤️ by HumbertoSaw
