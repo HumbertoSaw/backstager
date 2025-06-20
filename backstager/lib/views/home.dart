@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:backstager/components/file_components/delete_file_component.dart';
+import 'package:backstager/components/file_components/move_file_component.dart';
 import 'package:backstager/components/folder_components/create_folder_component.dart';
 import 'package:backstager/components/file_components/edit_file_component.dart';
 import 'package:backstager/components/folder_components/delete_folder_component.dart';
@@ -132,7 +133,12 @@ class _HomeViewState extends State<HomeView> {
                 onTap: () {
                   CustomNavigator.pushWithSlideTransition(
                     context,
-                    FolderContentView(id: folder.id),
+                    FolderContentView(
+                      id: folder.id,
+                      onFilesMoved: () {
+                        _loadFilesAndFolders();
+                      },
+                    ),
                   );
                 },
                 onLongPress: () {
@@ -449,7 +455,20 @@ class _HomeViewState extends State<HomeView> {
                   'Move',
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => MoveFileComponent(
+                      file: file,
+                      onFileMoved: _loadFilesAndFolders,
+                    ),
+                  ).then((value) {
+                    if (value == true) {
+                      _loadFilesAndFolders();
+                    }
+                  });
+                },
               ),
               SizedBox(height: 30.0),
             ],

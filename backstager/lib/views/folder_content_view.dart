@@ -1,3 +1,8 @@
+import 'dart:io';
+
+import 'package:backstager/components/file_components/delete_file_component.dart';
+import 'package:backstager/components/file_components/edit_file_component.dart';
+import 'package:backstager/components/file_components/move_file_component.dart';
 import 'package:backstager/components/no_files_found.dart';
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
@@ -8,7 +13,8 @@ import 'package:mime/mime.dart';
 
 class FolderContentView extends StatefulWidget {
   final int? id;
-  const FolderContentView({super.key, this.id});
+  final void Function() onFilesMoved;
+  const FolderContentView({super.key, this.id, required this.onFilesMoved});
 
   @override
   State<FolderContentView> createState() => _FolderContentViewState();
@@ -91,16 +97,18 @@ class _FolderContentViewState extends State<FolderContentView> {
               borderRadius: BorderRadius.circular(4),
             ),
             child: InkWell(
-              onTap: () {
-                // Handle file tap
-                // OpenFile.open(file.filePath);
+              onTap: () {},
+              onLongPress: () {
+                _showFileOptionsMenu(context, file);
               },
-              onLongPress: () {},
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Expanded(
-                    child: _buildFilePlaceholder(file.filePath.toString()),
+                    child: _buildFilePlaceholder(
+                      file.filePath.toString(),
+                      imagePath: file.imagePath,
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -121,7 +129,19 @@ class _FolderContentViewState extends State<FolderContentView> {
     );
   }
 
-  Widget _buildFilePlaceholder(String filePath) {
+  Widget _buildFilePlaceholder(String filePath, {String? imagePath}) {
+    if (imagePath != null && File(imagePath).existsSync()) {
+      return ClipRRect(
+        child: Image.file(
+          File(imagePath),
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+      );
+    }
+
     final mimeType = lookupMimeType(filePath);
     return Container(
       color: Colors.grey[200],
@@ -136,6 +156,100 @@ class _FolderContentViewState extends State<FolderContentView> {
           color: Colors.grey,
         ),
       ),
+    );
+  }
+
+  void _showFileOptionsMenu(BuildContext context, MediaFile file) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 10.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 10.0),
+              ListTile(
+                leading: Icon(
+                  Icons.edit,
+                  color: Theme.of(context).primaryColor,
+                ),
+                title: Text(
+                  'Edit',
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => EditFileComponent(
+                      file: file,
+                      onFileUpdated: _loadFilesAndFolders,
+                    ),
+                  ).then((value) {
+                    if (value == true) {
+                      _loadFilesAndFolders();
+                    }
+                  });
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.delete,
+                  color: Theme.of(context).primaryColor,
+                ),
+                title: Text(
+                  'Delete',
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => DeleteFileComponent(
+                      file: file,
+                      onFileDeleted: _loadFilesAndFolders,
+                    ),
+                  ).then((value) {
+                    if (value == true) {
+                      _loadFilesAndFolders();
+                    }
+                  });
+                },
+              ),
+              ListTile(
+                leading: Icon(
+                  Icons.drive_file_move,
+                  color: Theme.of(context).primaryColor,
+                ),
+                title: Text(
+                  'Move',
+                  style: TextStyle(color: Theme.of(context).primaryColor),
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (context) => MoveFileComponent(
+                      file: file,
+                      onFileMoved: _loadFilesAndFolders,
+                    ),
+                  ).then((value) {
+                    if (value == true) {
+                      _loadFilesAndFolders();
+                    }
+                    widget.onFilesMoved();
+                  });
+                },
+              ),
+              SizedBox(height: 30.0),
+            ],
+          ),
+        );
+      },
     );
   }
 }

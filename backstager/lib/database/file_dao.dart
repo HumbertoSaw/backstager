@@ -58,4 +58,14 @@ class MediaFileDao {
     final db = await conn.database;
     return await db.delete('files', where: 'id = ?', whereArgs: [id]);
   }
+
+  Future<int> patchFolderId(int fileId, int? newFolderId) async {
+    final db = await conn.database;
+    return await db.update(
+      'files',
+      {'folderId': newFolderId},
+      where: 'id = ?',
+      whereArgs: [fileId],
+    );
+  }
 }
