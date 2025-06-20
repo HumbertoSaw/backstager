@@ -40,6 +40,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
   final MediaClipDao clipDao = MediaClipDao(DatabaseConn.instance);
   List<MediaClip> _clips = [];
   int? _selectedClipId;
+  Timer? _clipEndTimer;
 
   bool _isLoading = true;
 
@@ -53,6 +54,17 @@ class _PlayAudioViewState extends State<PlayAudioView> {
     _initAudio();
     _loadClips();
     _initStreams();
+  }
+
+  @override
+  void dispose() {
+    _clipEndTimer?.cancel();
+    _durationSubscription?.cancel();
+    _positionSubscription?.cancel();
+    _playerCompleteSubscription?.cancel();
+    _playerStateChangeSubscription?.cancel();
+    _player.dispose();
+    super.dispose();
   }
 
   Future<void> _loadClips() async {
@@ -91,16 +103,6 @@ class _PlayAudioViewState extends State<PlayAudioView> {
     });
   }
 
-  @override
-  void dispose() {
-    _durationSubscription?.cancel();
-    _positionSubscription?.cancel();
-    _playerCompleteSubscription?.cancel();
-    _playerStateChangeSubscription?.cancel();
-    _player.dispose();
-    super.dispose();
-  }
-
   Future<void> _play() async {
     await _player.resume();
     setState(() => _playerState = PlayerState.playing);
@@ -131,6 +133,15 @@ class _PlayAudioViewState extends State<PlayAudioView> {
     } catch (e) {
       return Colors.grey;
     }
+  }
+
+  String formatTime(double seconds) {
+    final duration = Duration(milliseconds: (seconds * 1000).round());
+    final twoDigits = (int n) => n.toString().padLeft(2, '0');
+    final hours = duration.inHours;
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final secs = twoDigits(duration.inSeconds.remainder(60));
+    return hours > 0 ? "$hours:$minutes:$secs" : "$minutes:$secs";
   }
 
   @override
@@ -219,11 +230,39 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                   final isSelected = _selectedClipId == clip.id;
 
                   return GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        _selectedClipId = isSelected ? null : clip.id;
-                      });
+                    onTap: () async {
+                      final isSelected = _selectedClipId == clip.id;
+
+                      if (isSelected) {
+                        await _pause();
+                        setState(() => _selectedClipId = null);
+                        _clipEndTimer?.cancel();
+                      } else {
+                        final start = Duration(
+                          milliseconds: (clip.startAt * 1000).round(),
+                        );
+                        final end = Duration(
+                          milliseconds: (clip.endAt * 1000).round(),
+                        );
+
+                        await _player.seek(start);
+                        await _play();
+
+                        _clipEndTimer?.cancel();
+                        final durationUntilEnd = end - start;
+                        _clipEndTimer = Timer(durationUntilEnd, () {
+                          _stop();
+                          setState(() {
+                            _selectedClipId = null;
+                          });
+                        });
+
+                        setState(() {
+                          _selectedClipId = clip.id;
+                        });
+                      }
                     },
+
                     child: Card(
                       elevation: 0,
                       margin: const EdgeInsets.only(bottom: 12),
@@ -249,7 +288,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                           ),
                         ),
                         subtitle: Text(
-                          '${clip.startAt.toStringAsFixed(2)}s - ${clip.endAt.toStringAsFixed(2)}s',
+                          '${formatTime(clip.startAt)} - ${formatTime(clip.endAt)}',
                           style: TextStyle(
                             color: isSelected
                                 ? const Color.fromARGB(210, 255, 255, 255)
