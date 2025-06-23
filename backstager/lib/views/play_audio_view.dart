@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:backstager/components/ClipProgressBar.dart';
+import 'package:backstager/models/ClipProgressBar.dart';
 import 'package:backstager/components/clip_components/create_clip_component.dart';
 import 'package:backstager/database/clip_dao.dart';
 import 'package:backstager/database/database_conn.dart';

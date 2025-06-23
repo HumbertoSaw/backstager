@@ -1,4 +1,6 @@
+import 'package:backstager/views/permission_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'views/home.dart';
 
 void main() {
@@ -87,15 +89,41 @@ class MyApp extends StatelessWidget {
     ),
   );
 
+  Future<bool> _checkPermissions() async {
+    final audioStatus = await Permission.audio.status;
+    final photosStatus = await Permission.photos.status;
+    return audioStatus.isGranted && photosStatus.isGranted;
+  }
+
+  Future<Widget> _getInitialScreen() async {
+    final hasPermissions = await _checkPermissions();
+    return hasPermissions ? const HomeView() : const PermissionsScreen();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Backstage',
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme,
-      darkTheme: darkTheme,
-      themeMode: ThemeMode.light,
-      home: const HomeView(),
+    return FutureBuilder<Widget>(
+      future: _getInitialScreen(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const MaterialApp(
+            home: Scaffold(body: Center(child: CircularProgressIndicator())),
+          );
+        }
+
+        return MaterialApp(
+          title: 'Backstage',
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: ThemeMode.light,
+          home: snapshot.data!,
+          routes: {
+            '/home': (context) => const HomeView(),
+            '/permissions': (context) => const PermissionsScreen(),
+          },
+        );
+      },
     );
   }
 }
