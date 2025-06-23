@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:backstager/components/ClipProgressBar.dart';
 import 'package:backstager/components/clip_components/create_clip_component.dart';
 import 'package:backstager/database/clip_dao.dart';
 import 'package:backstager/database/database_conn.dart';
@@ -25,6 +26,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
   Duration? _duration;
   Duration? _position;
   bool _isLooping = false;
+  Duration get _audioDuration => _duration ?? Duration.zero;
 
   StreamSubscription? _durationSubscription;
   StreamSubscription? _positionSubscription;
@@ -144,6 +146,21 @@ class _PlayAudioViewState extends State<PlayAudioView> {
     return hours > 0 ? "$hours:$minutes:$secs" : "$minutes:$secs";
   }
 
+  Future<void> _deleteMediaClip(MediaClip clip) async {
+    try {
+      await clipDao.deleteMediaClip(clip.id!);
+      if (_selectedClipId == clip.id) {
+        setState(() => _selectedClipId = null);
+        _clipEndTimer?.cancel();
+      }
+      await _loadClips();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete clip: ${e.toString()}')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -212,7 +229,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
     }
   }
 
-  Expanded _clipList() {
+  Widget _clipList() {
     return Expanded(
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -229,71 +246,180 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                 children: _clips.map((clip) {
                   final isSelected = _selectedClipId == clip.id;
 
-                  return GestureDetector(
-                    onTap: () async {
-                      final isSelected = _selectedClipId == clip.id;
-
-                      if (isSelected) {
-                        await _pause();
-                        setState(() => _selectedClipId = null);
-                        _clipEndTimer?.cancel();
-                      } else {
-                        final start = Duration(
-                          milliseconds: (clip.startAt * 1000).round(),
-                        );
-                        final end = Duration(
-                          milliseconds: (clip.endAt * 1000).round(),
-                        );
-
-                        await _player.seek(start);
-                        await _play();
-
-                        _clipEndTimer?.cancel();
-                        final durationUntilEnd = end - start;
-                        _clipEndTimer = Timer(durationUntilEnd, () {
-                          _stop();
-                          setState(() {
-                            _selectedClipId = null;
-                          });
-                        });
-
-                        setState(() {
-                          _selectedClipId = clip.id;
-                        });
-                      }
-                    },
-
-                    child: Card(
-                      elevation: 0,
-                      margin: const EdgeInsets.only(bottom: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: _parseColor(clip.color),
-                          width: 2,
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Dismissible(
+                      key: Key(clip.id.toString()),
+                      direction: DismissDirection.startToEnd,
+                      background: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.only(left: 20),
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.white,
+                          size: 30,
                         ),
                       ),
-                      color: isSelected ? _parseColor(clip.color) : null,
-                      child: ListTile(
-                        leading: Icon(
-                          Icons.cut,
-                          color: isSelected
-                              ? Colors.white
-                              : _parseColor(clip.color),
-                        ),
-                        title: Text(
-                          clip.name,
-                          style: TextStyle(
-                            color: isSelected ? Colors.white : Colors.black,
+                      confirmDismiss: (direction) async {
+                        final confirmed = await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text(
+                              'Delete Clip',
+                              style: TextStyle(
+                                color: Color.fromARGB(255, 80, 80, 80),
+                              ),
+                            ),
+                            content: Text(
+                              'Are you sure you want to delete "${clip.name}"?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.pop(context, true),
+                                child: const Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                        subtitle: Text(
-                          '${formatTime(clip.startAt)} - ${formatTime(clip.endAt)}',
-                          style: TextStyle(
-                            color: isSelected
-                                ? const Color.fromARGB(210, 255, 255, 255)
-                                : Colors.black54,
-                            fontWeight: FontWeight.bold,
+                        );
+                        return confirmed;
+                      },
+                      onDismissed: (direction) async {
+                        await _deleteMediaClip(clip);
+                      },
+                      movementDuration: const Duration(milliseconds: 200),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(12),
+                          onTap: () async {
+                            final isSelected = _selectedClipId == clip.id;
+
+                            if (isSelected) {
+                              await _pause();
+                              setState(() => _selectedClipId = null);
+                              _clipEndTimer?.cancel();
+                            } else {
+                              final start = Duration(
+                                milliseconds: (clip.startAt * 1000).round(),
+                              );
+                              final end = Duration(
+                                milliseconds: (clip.endAt * 1000).round(),
+                              );
+
+                              await _player.seek(start);
+                              await _play();
+
+                              _clipEndTimer?.cancel();
+                              final durationUntilEnd = end - start;
+                              _clipEndTimer = Timer(durationUntilEnd, () {
+                                _stop();
+                                setState(() {
+                                  _selectedClipId = null;
+                                });
+                              });
+
+                              setState(() {
+                                _selectedClipId = clip.id;
+                              });
+                            }
+                          },
+                          child: Card(
+                            elevation: 0,
+                            margin: EdgeInsets.zero,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              side: BorderSide(
+                                color: _parseColor(clip.color),
+                                width: 2,
+                              ),
+                            ),
+                            color: isSelected ? _parseColor(clip.color) : null,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4),
+                              child: ListTile(
+                                leading: Icon(
+                                  Icons.cut,
+                                  color: isSelected
+                                      ? Colors.white
+                                      : _parseColor(clip.color),
+                                ),
+                                title: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      flex: 2,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            clip.name,
+                                            style: TextStyle(
+                                              color: isSelected
+                                                  ? Colors.white
+                                                  : const Color.fromARGB(
+                                                      255,
+                                                      92,
+                                                      92,
+                                                      92,
+                                                    ),
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text(
+                                            '${formatTime(clip.startAt)} - ${formatTime(clip.endAt)}',
+                                            style: TextStyle(
+                                              color: isSelected
+                                                  ? const Color.fromARGB(
+                                                      210,
+                                                      255,
+                                                      255,
+                                                      255,
+                                                    )
+                                                  : Colors.black54,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    if (_duration != null)
+                                      Expanded(
+                                        flex: 3,
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 8.0,
+                                          ),
+                                          child: ClipProgressBar(
+                                            startAt: clip.startAt,
+                                            endAt: clip.endAt,
+                                            totalDuration: _audioDuration,
+                                            color: isSelected
+                                                ? Colors.white
+                                                : _parseColor(clip.color),
+                                            backgroundColor:
+                                                Colors.grey.shade300,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -339,6 +465,34 @@ class _PlayAudioViewState extends State<PlayAudioView> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(MediaClip clip) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text(
+            'Delete Clip',
+            style: TextStyle(color: Color.fromARGB(255, 92, 92, 92)),
+          ),
+          content: Text('Are you sure you want to delete "${clip.name}"?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                await _deleteMediaClip(clip);
+              },
+              child: const Text('Delete', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
     );
   }
 

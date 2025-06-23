@@ -147,7 +147,7 @@ class _AddFilesViewState extends State<AddFilesView> {
                           alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(right: 20),
                           child: const Icon(
-                            Icons.delete,
+                            Icons.remove_circle,
                             color: Colors.white,
                             size: 30,
                           ),

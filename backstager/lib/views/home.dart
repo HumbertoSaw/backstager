@@ -139,6 +139,7 @@ class _HomeViewState extends State<HomeView> {
                       onFilesMoved: () {
                         _loadFilesAndFolders();
                       },
+                      folder: folder,
                     ),
                   );
                 },

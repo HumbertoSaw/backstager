@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:backstager/components/custom_navigator.dart';
 import 'package:backstager/components/file_components/delete_file_component.dart';
 import 'package:backstager/components/file_components/edit_file_component.dart';
 import 'package:backstager/components/file_components/move_file_component.dart';
@@ -7,6 +8,8 @@ import 'package:backstager/components/no_files_found.dart';
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
 import 'package:backstager/models/MediaFile.dart';
+import 'package:backstager/models/MediaFolder.dart';
+import 'package:backstager/views/play_audio_view.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mime/mime.dart';
@@ -14,7 +17,13 @@ import 'package:mime/mime.dart';
 class FolderContentView extends StatefulWidget {
   final int? id;
   final void Function() onFilesMoved;
-  const FolderContentView({super.key, this.id, required this.onFilesMoved});
+  final MediaFolder folder;
+  const FolderContentView({
+    super.key,
+    required this.id,
+    required this.onFilesMoved,
+    required this.folder,
+  });
 
   @override
   State<FolderContentView> createState() => _FolderContentViewState();
@@ -56,7 +65,7 @@ class _FolderContentViewState extends State<FolderContentView> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'BackStager',
+          widget.folder.name,
           style: GoogleFonts.montaga(
             textStyle: const TextStyle(
               color: Color(0xFFFFD700),
@@ -66,11 +75,11 @@ class _FolderContentViewState extends State<FolderContentView> {
           ),
         ),
       ),
-      body: _filesAndFoldersGrid(),
+      body: _filesGrid(),
     );
   }
 
-  Padding _filesAndFoldersGrid() {
+  Padding _filesGrid() {
     if (_folderFiles.isEmpty) {
       return Padding(
         padding: EdgeInsets.all(8.0),
@@ -97,7 +106,13 @@ class _FolderContentViewState extends State<FolderContentView> {
               borderRadius: BorderRadius.circular(4),
             ),
             child: InkWell(
-              onTap: () {},
+              onTap: () {
+                final audioFile = File(file.filePath.toString());
+                CustomNavigator.pushWithSlideTransition(
+                  context,
+                  PlayAudioView(audioFile: audioFile, file: file),
+                );
+              },
               onLongPress: () {
                 _showFileOptionsMenu(context, file);
               },
