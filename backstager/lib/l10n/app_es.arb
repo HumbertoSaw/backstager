@@ -146,7 +146,7 @@
         "success": "Archivo movido exitosamente",
         "noChanges": "No se hicieron cambios al archivo",
         "failure": "Error al mover el archivo: {error}"
-    }
+    },
 
     "createClipView": {
         "title": "Crear Nuevo Clip",
