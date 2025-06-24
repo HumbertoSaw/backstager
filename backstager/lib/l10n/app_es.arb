@@ -1,0 +1,173 @@
+{
+    "@@locale": "es",
+    "appTitle": "BackStager",
+    
+    "homeView": {
+        "noFilesFound": "No se encontraron carpetas o archivos",
+        "refresh": "Actualizar",
+        "addFiles": "Agregar Archivos",
+        "addFolder": "Agregar Carpeta",
+        "folderOptions": "Opciones de Carpeta",
+        "fileOptions": "Opciones de Archivo",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "move": "Mover",
+        "confirmDeleteFolder": "¿Estás seguro de eliminar esta carpeta?",
+        "confirmDeleteFile": "¿Estás seguro de eliminar este archivo?"
+    },
+
+    "permissionScreen": {
+        "title": "Acceso a Audio e Imágenes Requerido",
+        "description": "Backstager necesita permiso para acceder a archivos de audio e imágenes en tu dispositivo. Esto es necesario para cargar tus medios y guardar clips.",
+        "allowAccess": "Permitir Acceso",
+        "audioPermission": "Acceso a Audio",
+        "photosPermission": "Acceso a Fotos",
+        "permissionDenied": "Permiso Denegado",
+        "permissionGranted": "Acceso Permitido",
+        "permissionPermanentlyDenied": "Habilitar en Ajustes",
+        "permissionRestricted": "Restringido (Control Parental)",
+        "permissionLimited": "Acceso Limitado"
+    },
+
+    "audioPlayer": {
+        "noClips": "No hay clips creados",
+        "createClip": "Crear Clip",
+        "play": "Reproducir",
+        "pause": "Pausar",
+        "stop": "Detener",
+        "loop": "Repetir",
+        "deleteClipTitle": "Eliminar Clip",
+        "deleteClipMessage": "¿Estás seguro de querer eliminar \"{clipName}\"?",
+        "delete": "Eliminar",
+        "clipCreated": "Clip creado exitosamente",
+        "clipCreationFailed": "Error al crear clip",
+        "clipDeleted": "Clip eliminado exitosamente",
+        "clipDeletionFailed": "Error al eliminar clip",
+        "timeFormat": "{minutes}:{seconds}",
+        "timeFormatWithHours": "{hours}:{minutes}:{seconds}"
+    },
+
+    "folderContentView": {
+        "noFiles": "No hay archivos en esta carpeta",
+        "fileOptions": "Opciones de Archivo",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "move": "Mover",
+        "confirmDeleteTitle": "Eliminar Archivo",
+        "confirmDeleteMessage": "¿Estás seguro de querer eliminar este archivo?",
+        "fileMoved": "Archivo movido exitosamente",
+        "fileMoveFailed": "Error al mover archivo",
+        "fileDeleted": "Archivo eliminado exitosamente",
+        "fileDeletionFailed": "Error al eliminar archivo",
+        "fileUpdated": "Archivo actualizado exitosamente",
+        "fileUpdateFailed": "Error al actualizar archivo"
+    },
+
+    "addFilesView": {
+        "title": "Agregar Archivos Multimedia",
+        "emptyState": "Agrega archivos y guárdalos con los botones de abajo",
+        "addFiles": "Agregar Archivos",
+        "saveFiles": "Guardar Archivos",
+        "saving": "Guardando...",
+        "fileSaved": "¡Archivos guardados exitosamente!",
+        "saveError": "Error al guardar archivos, intenta nuevamente o reporta",
+        "pickError": "Error al seleccionar archivos: {error}",
+        "audioFile": "Archivo de Audio",
+        "videoFile": "Archivo de Video",
+        "fileSize": "{size} KB",
+        "removeFile": "Eliminar Archivo"
+    },
+
+    "createFolderView": {
+        "title": "Crear Nueva Carpeta",
+        "nameLabel": "Nombre de la Carpeta",
+        "nameHint": "Ingresa el nombre de la carpeta",
+        "coverLabel": "Imagen de Portada (Opcional)",
+        "selectImage": "Toca para seleccionar una imagen",
+        "cancel": "Cancelar",
+        "create": "Crear Carpeta",
+        "emptyNameError": "Por favor ingresa un nombre para la carpeta",
+        "success": "Carpeta \"{folderName}\" creada exitosamente",
+        "failure": "Error al crear la carpeta: {error}"
+    },
+
+    "deleteFolderView": {
+        "title": "Eliminar Carpeta",
+        "confirmation": "¿Eliminar esta carpeta del almacenamiento de la app?",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar",
+        "success": "Carpeta eliminada exitosamente",
+        "failure": "Error al eliminar la carpeta: {error}"
+    },
+
+    "editFolderView": {
+        "title": "Editar Carpeta",
+        "nameLabel": "Cambiar nombre",
+        "nameHint": "Ingresa un nuevo nombre para la carpeta",
+        "coverLabel": "Imagen de Portada (Opcional)",
+        "selectImage": "Toca para seleccionar una imagen",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "successRename": "Carpeta renombrada exitosamente",
+        "successUpdate": "Carpeta e imagen actualizadas exitosamente",
+        "failure": "Error al actualizar la carpeta: {error}"
+    },
+
+    "deleteFileView": {
+        "title": "Eliminar Archivo",
+        "confirmation": "¿Eliminar este archivo del almacenamiento de la app? El archivo original permanecerá en tu dispositivo.",
+        "cancel": "Cancelar",
+        "confirm": "Eliminar",
+        "success": "Archivo eliminado exitosamente",
+        "failure": "Error al eliminar el archivo: {error}"
+    },
+
+    "editFileView": {
+        "title": "Editar Archivo",
+        "nameLabel": "Cambiar nombre",
+        "nameHint": "Ingresa un nuevo nombre para el archivo",
+        "coverLabel": "Imagen de Portada del Archivo (Opcional)",
+        "selectImage": "Toca para seleccionar una imagen",
+        "cancel": "Cancelar",
+        "save": "Guardar",
+        "successRename": "Archivo renombrado exitosamente",
+        "successUpdate": "Archivo e imagen actualizados exitosamente",
+        "failure": "Error al actualizar el archivo: {error}"
+    },
+
+    "moveFileView": {
+        "title": "Mover Archivo",
+        "loading": "Cargando carpetas...",
+        "noFolders": "No se encontraron carpetas",
+        "selectInstruction": "Selecciona una carpeta para mover tu archivo",
+        "mainFolder": "Carpeta principal",
+        "cancel": "Cancelar",
+        "move": "Mover",
+        "success": "Archivo movido exitosamente",
+        "noChanges": "No se hicieron cambios al archivo",
+        "failure": "Error al mover el archivo: {error}"
+    }
+
+    "createClipView": {
+        "title": "Crear Nuevo Clip",
+        "clipNameLabel": "Nombre del Clip",
+        "clipNameHint": "Ingresa el nombre del clip",
+        "clipColorLabel": "Color del clip (Opcional)",
+        "clipRangeLabel": "Rango del Clip",
+        "startLabel": "Inicio: {start}s",
+        "endLabel": "Fin: {end}s",
+        "cancel": "Cancelar",
+        "create": "Crear Clip",
+        "errorAudioLoad": "Error al cargar el audio: {error}",
+        "errorEmptyName": "El nombre del clip no puede estar vacío",
+        "errorCreate": "Error al crear el clip: {error}"
+    },
+
+    "common": {
+        "cancel": "Cancelar",
+        "confirm": "Confirmar",
+        "folderName": "Nombre de Carpeta",
+        "fileName": "Nombre de Archivo",
+        "root": "Raíz"
+    }
+}

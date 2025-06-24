@@ -35,7 +35,6 @@ class _MoveFileComponentState extends State<MoveFileComponent> {
       setState(() {
         _folders = folders;
         _isLoading = false;
-        // Set initial selection to current folder or null
         _selectedFolder = widget.file.folderId != null
             ? _folders.firstWhere(
                 (folder) => folder.id == widget.file.folderId,
