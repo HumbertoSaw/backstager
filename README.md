@@ -20,6 +20,11 @@ This isn’t just an app — it’s the next must-have tool for your next rehear
 ![GitHub language count](https://img.shields.io/github/languages/count/HumbertoSaw/backstager?style=for-the-badge) &nbsp;
 ![GitHub top language](https://img.shields.io/github/languages/top/HumbertoSaw/backstager?style=for-the-badge)
 
+
+## How to install?
+
+<a href="https://github.com/WrichikBasu/ShakeAlarmClock/releases/latest"><img src="github.png" alt="Download from Github!" width="200"/></a>
+
 ## 📋 Prerequisites
 
 Before you begin, ensure you have met the following requirements:
