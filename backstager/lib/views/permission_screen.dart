@@ -31,7 +31,6 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       _isCheckingPermissions = false;
     });
 
-    // If permissions are granted, navigate to home
     if (audioStatus.isGranted && photosStatus.isGranted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pushReplacementNamed('/home');
@@ -54,7 +53,6 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
       await openAppSettings();
     }
 
-    // Check again after requesting
     await _checkPermissions();
   }
 
