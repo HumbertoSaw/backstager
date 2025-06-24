@@ -11,7 +11,19 @@ Whether it's saving cue lines, sound effects, or musical cues, BackStager puts c
 
 This isn’t just an app — it’s the next must-have tool for your next rehearsal.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+![GitHub license](https://img.shields.io/github/license/HumbertoSaw/backstager?style=for-the-badge)   &nbsp; 
+![GitHub last commit](https://img.shields.io/github/last-commit/HumbertoSaw/backstager?display_timestamp=committer&style=for-the-badge&label=Last%20commit)  &nbsp;
+
+![GitHub stars](https://img.shields.io/github/stars/HumbertoSaw/backstager?style=for-the-badge) &nbsp;
+![GitHub forks](https://img.shields.io/github/forks/HumbertoSaw/backstager?style=for-the-badge)
+
+![GitHub language count](https://img.shields.io/github/languages/count/HumbertoSaw/backstager?style=for-the-badge) &nbsp;
+![GitHub top language](https://img.shields.io/github/languages/top/HumbertoSaw/backstager?style=for-the-badge)
+
+
+## How to install?
+
+<a href="https://github.com/WrichikBasu/ShakeAlarmClock/releases/latest"><img src="github.png" alt="Download from Github!" width="200"/></a>
 
 ## 📋 Prerequisites
 
