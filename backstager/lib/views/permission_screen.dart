@@ -11,6 +11,7 @@ class PermissionsScreen extends StatefulWidget {
 class _PermissionsScreenState extends State<PermissionsScreen> {
   PermissionStatus _audioStatus = PermissionStatus.denied;
   PermissionStatus _photosStatus = PermissionStatus.denied;
+  PermissionStatus _microphoneStatus = PermissionStatus.denied;
   bool _isCheckingPermissions = false;
 
   @override
@@ -24,14 +25,18 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
     final audioStatus = await Permission.audio.status;
     final photosStatus = await Permission.photos.status;
+    final microphoneStatus = await Permission.microphone.status;
 
     setState(() {
       _audioStatus = audioStatus;
       _photosStatus = photosStatus;
+      _microphoneStatus = microphoneStatus;
       _isCheckingPermissions = false;
     });
 
-    if (audioStatus.isGranted && photosStatus.isGranted) {
+    if (audioStatus.isGranted &&
+        photosStatus.isGranted &&
+        microphoneStatus.isGranted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pushReplacementNamed('/home');
       });
@@ -41,15 +46,23 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
   Future<void> _requestPermissions() async {
     setState(() => _isCheckingPermissions = true);
 
-    final statuses = await [Permission.audio, Permission.photos].request();
+    final statuses = await [
+      Permission.audio,
+      Permission.photos,
+      Permission.microphone,
+    ].request();
 
     setState(() {
       _audioStatus = statuses[Permission.audio] ?? PermissionStatus.denied;
       _photosStatus = statuses[Permission.photos] ?? PermissionStatus.denied;
+      _microphoneStatus =
+          statuses[Permission.microphone] ?? PermissionStatus.denied;
       _isCheckingPermissions = false;
     });
 
-    if (_audioStatus.isPermanentlyDenied || _photosStatus.isPermanentlyDenied) {
+    if (_audioStatus.isPermanentlyDenied ||
+        _photosStatus.isPermanentlyDenied ||
+        _microphoneStatus.isPermanentlyDenied) {
       await openAppSettings();
     }
 
@@ -72,7 +85,8 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               ),
               const SizedBox(height: 24),
               Text(
-                'Audio & Image Access Required',
+                textAlign: TextAlign.center,
+                'Audio, Microphone & Image Access Required',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,
@@ -80,8 +94,8 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               ),
               const SizedBox(height: 16),
               const Text(
-                'Backstager needs permission to access audio files and images on your device. '
-                'This is required to load your media and save clips.',
+                'Backstager needs permission to access audio files, the microphone and images on your device. '
+                'This is required to load, create audio files and save clips.',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 16),
               ),

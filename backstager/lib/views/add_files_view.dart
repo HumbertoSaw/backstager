@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:backstager/components/custom_navigator.dart';
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/models/MediaFile.dart';
+import 'package:backstager/views/record_file_view.dart';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
@@ -172,30 +174,89 @@ class _AddFilesViewState extends State<AddFilesView> {
                     },
                   ),
           ),
-          Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Files'),
-                  onPressed: _pickFiles,
-                ),
-                const SizedBox(width: 20),
-                ElevatedButton.icon(
-                  icon: _isSaving
-                      ? const CircularProgressIndicator(color: Colors.white)
-                      : const Icon(Icons.save),
-                  label: _isSaving
-                      ? const Text('Saving...')
-                      : const Text('Save Files'),
-                  onPressed: _isSaving ? null : _saveFiles,
-                ),
-              ],
-            ),
+          _addFilesButtons(),
+        ],
+      ),
+    );
+  }
+
+  Widget _addFilesButtons() {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Theme.of(context).scaffoldBackgroundColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            spreadRadius: 0,
+            offset: const Offset(0, -2),
           ),
         ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildActionButton(
+            icon: Icons.add,
+            label: 'Add Files',
+            onPressed: _pickFiles,
+          ),
+          const SizedBox(height: 8),
+          _buildActionButton(
+            icon: Icons.mic,
+            label: 'Record New File',
+            onPressed: () {
+              CustomNavigator.pushWithSlideTransition(
+                context,
+                RecordAudioFileView(),
+              );
+            },
+          ),
+          const SizedBox(height: 8),
+          _buildActionButton(
+            icon: Icons.save,
+            label: 'Save Files',
+            onPressed: _isSaving ? null : _saveFiles,
+            isLoading: _isSaving,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback? onPressed,
+    bool isLoading = false,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        ),
+        onPressed: onPressed,
+        child: isLoading
+            ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 2,
+                ),
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(icon, size: 24),
+                  const SizedBox(width: 8),
+                  Text(label),
+                ],
+              ),
       ),
     );
   }
