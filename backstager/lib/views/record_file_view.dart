@@ -116,7 +116,7 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
         return AlertDialog(
           title: const Text(
             'Save Recording',
-            style: const TextStyle(
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Color.fromARGB(255, 92, 92, 92),
             ),
@@ -225,17 +225,26 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  if (_isRecording)
-                    Text(
+                  Visibility(
+                    visible: _isRecording,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: Text(
                       _formatDuration(_recordingDuration),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                  ),
                   const SizedBox(height: 20),
-                  if (_isRecording)
-                    AudioWaveforms(
+                  Visibility(
+                    visible: _isRecording,
+                    maintainSize: true,
+                    maintainAnimation: true,
+                    maintainState: true,
+                    child: AudioWaveforms(
                       size: const Size(double.infinity, 50),
                       recorderController: _recorderController,
                       enableGesture: false,
@@ -245,6 +254,7 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
                         showMiddleLine: false,
                       ),
                     ),
+                  ),
                   const SizedBox(height: 30),
                   ElevatedButton.icon(
                     icon: Icon(
