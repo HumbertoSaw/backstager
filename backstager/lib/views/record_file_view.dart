@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -75,10 +76,6 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
     }
   }
 
-  String _formatDuration(Duration d) {
-    return d.toString().split('.').first.padLeft(8, "0");
-  }
-
   Future<void> _stopRecording() async {
     final path = await _record.stop();
     await _recorderController.stop();
@@ -109,14 +106,16 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
     File file,
     String path,
   ) {
+    final t = AppLocalizations.of(context)!;
+
     return showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) {
         return AlertDialog(
-          title: const Text(
-            'Save Recording',
-            style: TextStyle(
+          title: Text(
+            t.saveRecordingDialogTitle,
+            style: const TextStyle(
               fontWeight: FontWeight.bold,
               color: Color.fromARGB(255, 92, 92, 92),
             ),
@@ -125,21 +124,27 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildInfoItem('Name:', fileName),
-              const SizedBox(height: 8),
-              _buildInfoItem('Duration:', _formatDuration(duration)),
+              _buildInfoItem(t.saveRecordingDialogName, fileName),
               const SizedBox(height: 8),
               _buildInfoItem(
-                'Size:',
+                t.saveRecordingDialogDuration,
+                _formatDuration(duration),
+              ),
+              const SizedBox(height: 8),
+              _buildInfoItem(
+                t.saveRecordingDialogSize,
                 '${(fileSize / 1024).toStringAsFixed(1)} KB',
               ),
               const SizedBox(height: 8),
-              _buildInfoItem('Date:', fileDate.toLocal().toString()),
+              _buildInfoItem(
+                t.saveRecordingDialogDate,
+                fileDate.toLocal().toString(),
+              ),
             ],
           ),
           actions: [
             TextButton(
-              child: const Text('Discard'),
+              child: Text(t.saveRecordingDialogDiscard),
               onPressed: () async {
                 if (await file.exists()) {
                   await file.delete();
@@ -148,7 +153,7 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
               },
             ),
             ElevatedButton(
-              child: const Text('Save'),
+              child: Text(t.saveRecordingDialogSave),
               onPressed: () async {
                 final mediaFile = MediaFile(
                   name: fileName,
@@ -182,6 +187,10 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
     );
   }
 
+  String _formatDuration(Duration d) {
+    return d.toString().split('.').first.padLeft(8, "0");
+  }
+
   @override
   void dispose() {
     _record.dispose();
@@ -191,9 +200,11 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Audio Recorder'),
+        title: Text(t.recordAudioViewTitle),
         backgroundColor: Colors.deepPurple,
       ),
       body: Center(
@@ -217,34 +228,26 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
                   const SizedBox(height: 20),
                   Text(
                     _isRecording
-                        ? 'Recording in progress...'
-                        : 'Press to start recording',
+                        ? t.recordAudioViewRecordingInProgress
+                        : t.recordAudioViewPressToStart,
                     style: TextStyle(
                       fontSize: 16,
                       color: _isRecording ? Colors.red[700] : Colors.grey[700],
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 12),
-                  Visibility(
-                    visible: _isRecording,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: Text(
+                  if (_isRecording)
+                    Text(
                       _formatDuration(_recordingDuration),
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
                   const SizedBox(height: 20),
-                  Visibility(
-                    visible: _isRecording,
-                    maintainSize: true,
-                    maintainAnimation: true,
-                    maintainState: true,
-                    child: AudioWaveforms(
+                  if (_isRecording)
+                    AudioWaveforms(
                       size: const Size(double.infinity, 50),
                       recorderController: _recorderController,
                       enableGesture: false,
@@ -254,14 +257,15 @@ class _RecordAudioFileViewState extends State<RecordAudioFileView> {
                         showMiddleLine: false,
                       ),
                     ),
-                  ),
                   const SizedBox(height: 30),
                   ElevatedButton.icon(
                     icon: Icon(
                       _isRecording ? Icons.stop : Icons.fiber_manual_record,
                     ),
                     label: Text(
-                      _isRecording ? 'Stop Recording' : 'Start Recording',
+                      _isRecording
+                          ? t.recordAudioViewStopRecording
+                          : t.recordAudioViewStartRecording,
                     ),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,

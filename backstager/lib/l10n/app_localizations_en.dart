@@ -174,6 +174,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addFilesViewAddFiles => 'Add Files';
 
   @override
+  String get addFilesViewRecordFile => 'Record New File';
+
+  @override
   String get addFilesViewSaveFiles => 'Save Files';
 
   @override
@@ -203,6 +206,42 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addFilesViewRemoveFile => 'Remove File';
+
+  @override
+  String get recordAudioViewTitle => 'Audio Recorder';
+
+  @override
+  String get recordAudioViewRecordingInProgress => 'Recording in progress...';
+
+  @override
+  String get recordAudioViewPressToStart => 'Press to start recording';
+
+  @override
+  String get recordAudioViewStartRecording => 'Start Recording';
+
+  @override
+  String get recordAudioViewStopRecording => 'Stop Recording';
+
+  @override
+  String get saveRecordingDialogTitle => 'Save Recording';
+
+  @override
+  String get saveRecordingDialogName => 'Name:';
+
+  @override
+  String get saveRecordingDialogDuration => 'Duration:';
+
+  @override
+  String get saveRecordingDialogSize => 'Size:';
+
+  @override
+  String get saveRecordingDialogDate => 'Date:';
+
+  @override
+  String get saveRecordingDialogDiscard => 'Discard';
+
+  @override
+  String get saveRecordingDialogSave => 'Save';
 
   @override
   String get createFolderViewTitle => 'Create New Folder';

@@ -1,5 +1,6 @@
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFolder.dart';
 import 'package:flutter/material.dart';
 
@@ -23,57 +24,50 @@ class _DeleteFolderComponentState extends State<DeleteFolderComponent> {
   final MediaFileDao fileDao = MediaFileDao(DatabaseConn.instance);
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Future<void> _deleteFolder() async {
+    final t = AppLocalizations.of(context)!;
     setState(() => _isSaving = true);
 
     try {
       await fileDao.deleteMediaFile(widget.folder.id!);
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Folder deleted successfully')));
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(t.deleteFolderViewSuccess)));
+      }
 
       if (widget.onFolderDeleted != null) {
         widget.onFolderDeleted!();
       }
-      Navigator.pop(context);
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error updating file: $e')));
     } finally {
-      setState(() => _isSaving = false);
+      if (mounted) setState(() => _isSaving = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return AlertDialog(
       title: Text(
-        'Delete Folder',
+        t.deleteFolderViewTitle,
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [Text("Remove this folder from app storage?")],
-      ),
+      content: Text(t.deleteFolderViewConfirmation),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(t.deleteFolderViewCancel),
         ),
         ElevatedButton(
           onPressed: _isSaving ? null : _deleteFolder,
-          child: const Text('Save'),
+          child: Text(t.deleteFolderViewConfirm),
         ),
       ],
     );

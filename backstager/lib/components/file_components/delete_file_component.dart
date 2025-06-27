@@ -1,5 +1,6 @@
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFile.dart';
 import 'package:flutter/material.dart';
 
@@ -22,25 +23,16 @@ class _DeleteFileComponentState extends State<DeleteFileComponent> {
 
   final MediaFileDao fileDao = MediaFileDao(DatabaseConn.instance);
 
-  @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
   Future<void> _deleteFile() async {
     setState(() => _isSaving = true);
+    final t = AppLocalizations.of(context)!;
 
     try {
       await fileDao.deleteMediaFile(widget.file.id!);
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('File deleted successfully')));
+      ).showSnackBar(SnackBar(content: Text(t.deleteFileViewSuccess)));
 
       if (widget.onFileDeleted != null) {
         widget.onFileDeleted!();
@@ -57,27 +49,25 @@ class _DeleteFileComponentState extends State<DeleteFileComponent> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return AlertDialog(
       title: Text(
-        'Delete File',
+        t.deleteFileViewTitle,
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            "Remove this file from app storage? The original file will stay on your device.",
-          ),
-        ],
+        children: [Text(t.deleteFileViewConfirmation)],
       ),
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(t.deleteFileViewCancel),
         ),
         ElevatedButton(
           onPressed: _isSaving ? null : _deleteFile,
-          child: const Text('Save'),
+          child: Text(t.deleteFileViewConfirm),
         ),
       ],
     );

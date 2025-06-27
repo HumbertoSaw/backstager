@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFile.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,6 +42,7 @@ class _EditFileComponentState extends State<EditFileComponent> {
   }
 
   Future<void> _saveChanges() async {
+    final t = AppLocalizations.of(context)!;
     final newName = _nameController.text.trim();
 
     if (newName.isEmpty ||
@@ -68,8 +70,8 @@ class _EditFileComponentState extends State<EditFileComponent> {
         SnackBar(
           content: Text(
             _selectedImage != null
-                ? 'File and image updated successfully'
-                : 'File renamed successfully',
+                ? t.editFileViewSuccessUpdate
+                : t.editFileViewSuccessRename,
           ),
         ),
       );
@@ -94,9 +96,11 @@ class _EditFileComponentState extends State<EditFileComponent> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return AlertDialog(
       title: Text(
-        'Edit File',
+        t.editFileViewTitle,
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
       content: SingleChildScrollView(
@@ -106,16 +110,16 @@ class _EditFileComponentState extends State<EditFileComponent> {
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: 'Change name',
-                hintText: widget.file.name,
+                labelText: t.editFileViewNameLabel,
+                hintText: t.editFileViewNameHint,
                 border: const OutlineInputBorder(),
               ),
               autofocus: true,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'File Cover Image (Optional)',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              t.editFileViewCoverLabel,
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             Center(
@@ -138,7 +142,7 @@ class _EditFileComponentState extends State<EditFileComponent> {
                       width: 1,
                     ),
                   ),
-                  child: _buildImagePreview(),
+                  child: _buildImagePreview(t),
                 ),
               ),
             ),
@@ -153,17 +157,17 @@ class _EditFileComponentState extends State<EditFileComponent> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(t.editFileViewCancel),
         ),
         ElevatedButton(
           onPressed: _isSaving ? null : _saveChanges,
-          child: const Text('Save'),
+          child: Text(t.editFileViewSave),
         ),
       ],
     );
   }
 
-  Widget _buildImagePreview() {
+  Widget _buildImagePreview(AppLocalizations t) {
     if (_selectedImage != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -177,10 +181,13 @@ class _EditFileComponentState extends State<EditFileComponent> {
     } else {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.image, size: 40, color: Colors.grey),
-          SizedBox(height: 8),
-          Text('Tap to select image', style: TextStyle(color: Colors.grey)),
+        children: [
+          const Icon(Icons.image, size: 40, color: Colors.grey),
+          const SizedBox(height: 8),
+          Text(
+            t.editFileViewSelectImage,
+            style: const TextStyle(color: Colors.grey),
+          ),
         ],
       );
     }

@@ -413,6 +413,12 @@ abstract class AppLocalizations {
   /// **'Add Files'**
   String get addFilesViewAddFiles;
 
+  /// No description provided for @addFilesViewRecordFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Record New File'**
+  String get addFilesViewRecordFile;
+
   /// No description provided for @addFilesViewSaveFiles.
   ///
   /// In en, this message translates to:
@@ -466,6 +472,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove File'**
   String get addFilesViewRemoveFile;
+
+  /// No description provided for @recordAudioViewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Recorder'**
+  String get recordAudioViewTitle;
+
+  /// No description provided for @recordAudioViewRecordingInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording in progress...'**
+  String get recordAudioViewRecordingInProgress;
+
+  /// No description provided for @recordAudioViewPressToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Press to start recording'**
+  String get recordAudioViewPressToStart;
+
+  /// No description provided for @recordAudioViewStartRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Recording'**
+  String get recordAudioViewStartRecording;
+
+  /// No description provided for @recordAudioViewStopRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop Recording'**
+  String get recordAudioViewStopRecording;
+
+  /// No description provided for @saveRecordingDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Recording'**
+  String get saveRecordingDialogTitle;
+
+  /// No description provided for @saveRecordingDialogName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name:'**
+  String get saveRecordingDialogName;
+
+  /// No description provided for @saveRecordingDialogDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration:'**
+  String get saveRecordingDialogDuration;
+
+  /// No description provided for @saveRecordingDialogSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size:'**
+  String get saveRecordingDialogSize;
+
+  /// No description provided for @saveRecordingDialogDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date:'**
+  String get saveRecordingDialogDate;
+
+  /// No description provided for @saveRecordingDialogDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get saveRecordingDialogDiscard;
+
+  /// No description provided for @saveRecordingDialogSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get saveRecordingDialogSave;
 
   /// No description provided for @createFolderViewTitle.
   ///

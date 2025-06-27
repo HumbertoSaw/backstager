@@ -7,6 +7,7 @@ import 'package:backstager/components/file_components/move_file_component.dart';
 import 'package:backstager/components/no_files_found.dart';
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFile.dart';
 import 'package:backstager/models/MediaFolder.dart';
 import 'package:backstager/views/play_audio_view.dart';
@@ -18,6 +19,7 @@ class FolderContentView extends StatefulWidget {
   final int? id;
   final void Function() onFilesMoved;
   final MediaFolder folder;
+
   const FolderContentView({
     super.key,
     required this.id,
@@ -42,9 +44,7 @@ class _FolderContentViewState extends State<FolderContentView> {
   }
 
   Future<void> _loadFilesAndFolders() async {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       final folderFiles = await fileDao.getMediaFilesByFolderId(widget.id);
@@ -53,15 +53,15 @@ class _FolderContentViewState extends State<FolderContentView> {
         _isLoading = false;
       });
     } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
       debugPrint('Error loading data: $e');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -75,15 +75,15 @@ class _FolderContentViewState extends State<FolderContentView> {
           ),
         ),
       ),
-      body: _filesGrid(),
+      body: _filesGrid(t),
     );
   }
 
-  Padding _filesGrid() {
+  Padding _filesGrid(AppLocalizations t) {
     if (_folderFiles.isEmpty) {
       return Padding(
-        padding: EdgeInsets.all(8.0),
-        child: NoFilesFound.noFilesFound(title: 'No folders or files found.'),
+        padding: const EdgeInsets.all(8.0),
+        child: NoFilesFound.noFilesFound(title: t.folderContentViewNoFiles),
       );
     }
 
@@ -114,7 +114,7 @@ class _FolderContentViewState extends State<FolderContentView> {
                 );
               },
               onLongPress: () {
-                _showFileOptionsMenu(context, file);
+                _showFileOptionsMenu(context, file, t);
               },
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -174,7 +174,11 @@ class _FolderContentViewState extends State<FolderContentView> {
     );
   }
 
-  void _showFileOptionsMenu(BuildContext context, MediaFile file) {
+  void _showFileOptionsMenu(
+    BuildContext context,
+    MediaFile file,
+    AppLocalizations t,
+  ) {
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -186,14 +190,14 @@ class _FolderContentViewState extends State<FolderContentView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
               ListTile(
                 leading: Icon(
                   Icons.edit,
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(
-                  'Edit',
+                  t.folderContentViewEdit,
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
                 onTap: () {
@@ -205,9 +209,7 @@ class _FolderContentViewState extends State<FolderContentView> {
                       onFileUpdated: _loadFilesAndFolders,
                     ),
                   ).then((value) {
-                    if (value == true) {
-                      _loadFilesAndFolders();
-                    }
+                    if (value == true) _loadFilesAndFolders();
                   });
                 },
               ),
@@ -217,7 +219,7 @@ class _FolderContentViewState extends State<FolderContentView> {
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(
-                  'Delete',
+                  t.folderContentViewDelete,
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
                 onTap: () {
@@ -229,9 +231,7 @@ class _FolderContentViewState extends State<FolderContentView> {
                       onFileDeleted: _loadFilesAndFolders,
                     ),
                   ).then((value) {
-                    if (value == true) {
-                      _loadFilesAndFolders();
-                    }
+                    if (value == true) _loadFilesAndFolders();
                   });
                 },
               ),
@@ -241,7 +241,7 @@ class _FolderContentViewState extends State<FolderContentView> {
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(
-                  'Move',
+                  t.folderContentViewMove,
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
                 onTap: () {
@@ -253,14 +253,12 @@ class _FolderContentViewState extends State<FolderContentView> {
                       onFileMoved: _loadFilesAndFolders,
                     ),
                   ).then((value) {
-                    if (value == true) {
-                      _loadFilesAndFolders();
-                    }
+                    if (value == true) _loadFilesAndFolders();
                     widget.onFilesMoved();
                   });
                 },
               ),
-              SizedBox(height: 30.0),
+              const SizedBox(height: 30.0),
             ],
           ),
         );

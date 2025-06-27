@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:backstager/components/custom_navigator.dart';
 import 'package:backstager/database/database_conn.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFile.dart';
 import 'package:backstager/views/record_file_view.dart';
 import 'package:flutter/material.dart';
@@ -47,9 +48,7 @@ class _AddFilesViewState extends State<AddFilesView> {
   }
 
   Future<void> _saveFiles() async {
-    if (_selectedFiles.isEmpty) {
-      return;
-    }
+    if (_selectedFiles.isEmpty) return;
 
     setState(() {
       _isSaving = true;
@@ -93,14 +92,19 @@ class _AddFilesViewState extends State<AddFilesView> {
       setState(() {
         _selectedFiles.clear();
       });
+
       widget.onFilesAdded();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Files saved successfully!')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.addFilesViewFileSaved),
+        ),
+      );
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error saving files, try again or report')),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.addFilesViewSaveError),
+        ),
       );
       Navigator.pop(context);
     } finally {
@@ -112,8 +116,10 @@ class _AddFilesViewState extends State<AddFilesView> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Media Files')),
+      appBar: AppBar(title: Text(t.addFilesViewTitle)),
       body: Column(
         children: [
           Expanded(
@@ -127,12 +133,13 @@ class _AddFilesViewState extends State<AddFilesView> {
                           size: 80,
                           color: const Color.fromARGB(255, 165, 165, 165),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
-                          "Add files and save them with the buttons below",
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 165, 165, 165),
+                          t.addFilesViewEmptyState,
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 165, 165, 165),
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ],
                     ),
@@ -154,7 +161,7 @@ class _AddFilesViewState extends State<AddFilesView> {
                             size: 30,
                           ),
                         ),
-                        onDismissed: (direction) => _removeFile(index),
+                        onDismissed: (_) => _removeFile(index),
                         child: ListTile(
                           leading: Icon(
                             file.path!.endsWith('.mp3') ||
@@ -167,20 +174,22 @@ class _AddFilesViewState extends State<AddFilesView> {
                           ),
                           title: Text(file.name),
                           subtitle: Text(
-                            '${(file.size / 1024).toStringAsFixed(2)} KB',
+                            t.addFilesViewFileSize(
+                              (file.size / 1024).toStringAsFixed(2),
+                            ),
                           ),
                         ),
                       );
                     },
                   ),
           ),
-          _addFilesButtons(),
+          _addFilesButtons(t),
         ],
       ),
     );
   }
 
-  Widget _addFilesButtons() {
+  Widget _addFilesButtons(AppLocalizations t) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -199,24 +208,24 @@ class _AddFilesViewState extends State<AddFilesView> {
         children: [
           _buildActionButton(
             icon: Icons.add,
-            label: 'Add Files',
+            label: t.addFilesViewAddFiles,
             onPressed: _pickFiles,
           ),
           const SizedBox(height: 8),
           _buildActionButton(
             icon: Icons.mic,
-            label: 'Record New File',
+            label: t.addFilesViewRecordFile,
             onPressed: () {
               CustomNavigator.pushWithSlideTransition(
                 context,
-                RecordAudioFileView(),
+                const RecordAudioFileView(),
               );
             },
           ),
           const SizedBox(height: 8),
           _buildActionButton(
             icon: Icons.save,
-            label: 'Save Files',
+            label: _isSaving ? t.addFilesViewSaving : t.addFilesViewSaveFiles,
             onPressed: _isSaving ? null : _saveFiles,
             isLoading: _isSaving,
           ),

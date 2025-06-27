@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/ClipProgressBar.dart';
 import 'package:backstager/components/clip_components/create_clip_component.dart';
 import 'package:backstager/database/clip_dao.dart';
 import 'package:backstager/database/database_conn.dart';
-import 'package:backstager/database/file_dao.dart';
 import 'package:backstager/models/MediaClip.dart';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
@@ -36,9 +36,6 @@ class _PlayAudioViewState extends State<PlayAudioView> {
   bool get _isPlaying => _playerState == PlayerState.playing;
   bool get _isPaused => _playerState == PlayerState.paused;
 
-  String get _durationText => _duration?.toString().split('.').first ?? '';
-  String get _positionText => _position?.toString().split('.').first ?? '';
-
   final MediaClipDao clipDao = MediaClipDao(DatabaseConn.instance);
   List<MediaClip> _clips = [];
   int? _selectedClipId;
@@ -49,10 +46,8 @@ class _PlayAudioViewState extends State<PlayAudioView> {
   @override
   void initState() {
     super.initState();
-
     _player = AudioPlayer();
     _player.setReleaseMode(ReleaseMode.stop);
-
     _initAudio();
     _loadClips();
     _initStreams();
@@ -127,7 +122,6 @@ class _PlayAudioViewState extends State<PlayAudioView> {
     if (colorString == null || colorString.isEmpty) {
       return Colors.grey;
     }
-
     try {
       final hexColor = colorString.replaceAll('#', '');
       final color = hexColor.length == 6 ? 'FF$hexColor' : hexColor;
@@ -155,14 +149,17 @@ class _PlayAudioViewState extends State<PlayAudioView> {
       }
       await _loadClips();
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete clip: ${e.toString()}')),
-      );
+      final t = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(t.audioPlayerClipDeletionFailed)));
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(title: Text(widget.file.name)),
@@ -177,20 +174,19 @@ class _PlayAudioViewState extends State<PlayAudioView> {
             ),
             const SizedBox(height: 20),
             _audioControlls(),
-
             _seekBar(),
             Text(
               _position != null
-                  ? '$_positionText / $_durationText'
+                  ? '${_position.toString().split('.').first} / ${_duration.toString().split('.').first}'
                   : _duration != null
-                  ? _durationText
+                  ? _duration.toString().split('.').first
                   : '',
               style: const TextStyle(fontSize: 16.0),
             ),
             const SizedBox(height: 20),
-            _createClipButton(context),
+            _createClipButton(t),
             const SizedBox(height: 10),
-            _clipList(),
+            _clipList(t),
           ],
         ),
       ),
@@ -214,7 +210,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
         decoration: BoxDecoration(
           color: Colors.grey[300],
           borderRadius: BorderRadius.circular(16),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
               color: Colors.black26,
               blurRadius: 8,
@@ -229,15 +225,15 @@ class _PlayAudioViewState extends State<PlayAudioView> {
     }
   }
 
-  Widget _clipList() {
+  Widget _clipList(AppLocalizations t) {
     return Expanded(
       child: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _clips.isEmpty
-          ? const Center(
+          ? Center(
               child: Text(
-                "No clips created",
-                style: TextStyle(color: Colors.grey),
+                t.audioPlayerNoClips,
+                style: const TextStyle(color: Colors.grey),
               ),
             )
           : SingleChildScrollView(
@@ -288,9 +284,9 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                               ),
                               TextButton(
                                 onPressed: () => Navigator.pop(context, true),
-                                child: const Text(
-                                  'Delete',
-                                  style: TextStyle(color: Colors.red),
+                                child: Text(
+                                  t.audioPlayerDelete,
+                                  style: const TextStyle(color: Colors.red),
                                 ),
                               ),
                             ],
@@ -308,7 +304,6 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                           borderRadius: BorderRadius.circular(12),
                           onTap: () async {
                             final isSelected = _selectedClipId == clip.id;
-
                             if (isSelected) {
                               await _pause();
                               setState(() => _selectedClipId = null);
@@ -320,22 +315,14 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                               final end = Duration(
                                 milliseconds: (clip.endAt * 1000).round(),
                               );
-
                               await _player.seek(start);
                               await _play();
-
                               _clipEndTimer?.cancel();
-                              final durationUntilEnd = end - start;
-                              _clipEndTimer = Timer(durationUntilEnd, () {
+                              _clipEndTimer = Timer(end - start, () {
                                 _stop();
-                                setState(() {
-                                  _selectedClipId = null;
-                                });
+                                setState(() => _selectedClipId = null);
                               });
-
-                              setState(() {
-                                _selectedClipId = clip.id;
-                              });
+                              setState(() => _selectedClipId = clip.id);
                             }
                           },
                           child: Card(
@@ -359,7 +346,6 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                                       : _parseColor(clip.color),
                                 ),
                                 title: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Expanded(
                                       flex: 2,
@@ -372,12 +358,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                                             style: TextStyle(
                                               color: isSelected
                                                   ? Colors.white
-                                                  : const Color.fromARGB(
-                                                      255,
-                                                      92,
-                                                      92,
-                                                      92,
-                                                    ),
+                                                  : const Color(0xFF5C5C5C),
                                               fontWeight: FontWeight.bold,
                                             ),
                                           ),
@@ -385,12 +366,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
                                             '${formatTime(clip.startAt)} - ${formatTime(clip.endAt)}',
                                             style: TextStyle(
                                               color: isSelected
-                                                  ? const Color.fromARGB(
-                                                      210,
-                                                      255,
-                                                      255,
-                                                      255,
-                                                    )
+                                                  ? Colors.white70
                                                   : Colors.black54,
                                             ),
                                           ),
@@ -431,7 +407,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
     );
   }
 
-  Padding _createClipButton(BuildContext context) {
+  Padding _createClipButton(AppLocalizations t) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: SizedBox(
@@ -450,9 +426,7 @@ class _PlayAudioViewState extends State<PlayAudioView> {
               context: context,
               builder: (context) => CreateClipComponent(
                 file: widget.file,
-                onClipCreated: () {
-                  _loadClips();
-                },
+                onClipCreated: () => _loadClips(),
               ),
             );
           },
@@ -460,39 +434,11 @@ class _PlayAudioViewState extends State<PlayAudioView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(Icons.add, size: 25, weight: 700),
-              Text("Create Clip"),
+              Text(t.audioPlayerCreateClip),
             ],
           ),
         ),
       ),
-    );
-  }
-
-  void _showDeleteConfirmationDialog(MediaClip clip) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text(
-            'Delete Clip',
-            style: TextStyle(color: Color.fromARGB(255, 92, 92, 92)),
-          ),
-          content: Text('Are you sure you want to delete "${clip.name}"?'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () async {
-                Navigator.of(context).pop();
-                await _deleteMediaClip(clip);
-              },
-              child: const Text('Delete', style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
     );
   }
 

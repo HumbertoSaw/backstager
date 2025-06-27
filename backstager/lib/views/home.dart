@@ -9,6 +9,7 @@ import 'package:backstager/components/folder_components/edit_folder_component.da
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/file_dao.dart';
 import 'package:backstager/database/folder_dao.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFile.dart';
 import 'package:backstager/models/MediaFolder.dart';
 import 'package:backstager/views/add_files_view.dart';
@@ -69,6 +70,8 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     if (_firstBuild) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         _scaffoldKey.currentState?.openDrawer();
@@ -94,15 +97,15 @@ class _HomeViewState extends State<HomeView> {
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _loadFilesAndFolders,
-            tooltip: 'Refresh',
+            tooltip: t.homeViewRefresh,
           ),
         ],
       ),
-      floatingActionButton: _floatingActionButtons(context),
+      floatingActionButton: _floatingActionButtons(context, t),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : _currentFiles.isEmpty && _currentFolders.isEmpty
-          ? NoFilesFound.noFilesFound(title: 'No folders or files found.')
+          ? NoFilesFound.noFilesFound(title: t.homeViewNoFilesFound)
           : _filesAndFoldersGrid(),
     );
   }
@@ -160,8 +163,12 @@ class _HomeViewState extends State<HomeView> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.folder, size: 18.0, color: Colors.grey),
-                          SizedBox(width: 4.0),
+                          const Icon(
+                            Icons.folder,
+                            size: 18.0,
+                            color: Colors.grey,
+                          ),
+                          const SizedBox(width: 4.0),
                           Flexible(
                             child: Text(
                               folder.name,
@@ -215,8 +222,12 @@ class _HomeViewState extends State<HomeView> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.file_copy, size: 18.0, color: Colors.grey),
-                        SizedBox(width: 4.0),
+                        const Icon(
+                          Icons.file_copy,
+                          size: 18.0,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 4.0),
                         Flexible(
                           child: Text(
                             file.name,
@@ -288,7 +299,7 @@ class _HomeViewState extends State<HomeView> {
     );
   }
 
-  Column _floatingActionButtons(BuildContext context) {
+  Column _floatingActionButtons(BuildContext context, AppLocalizations t) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.end,
@@ -307,7 +318,7 @@ class _HomeViewState extends State<HomeView> {
           heroTag: 'add_files',
           backgroundColor: Theme.of(context).primaryColor,
           icon: const Icon(Icons.note_add_rounded),
-          label: const Text('Add Files'),
+          label: Text(t.homeViewAddFiles),
         ),
         const SizedBox(height: 16),
         FloatingActionButton.extended(
@@ -324,13 +335,15 @@ class _HomeViewState extends State<HomeView> {
           heroTag: 'add_folder',
           backgroundColor: Theme.of(context).primaryColor,
           icon: const Icon(Icons.create_new_folder_sharp),
-          label: const Text('Add Folder'),
+          label: Text(t.homeViewAddFolder),
         ),
       ],
     );
   }
 
   void _showFolderOptionsMenu(BuildContext context, MediaFolder folder) {
+    final t = AppLocalizations.of(context)!;
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -340,11 +353,11 @@ class _HomeViewState extends State<HomeView> {
         return Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SizedBox(height: 10.0),
+            const SizedBox(height: 10.0),
             ListTile(
               leading: Icon(Icons.edit, color: Theme.of(context).primaryColor),
               title: Text(
-                'Edit',
+                t.homeViewEdit,
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
               onTap: () {
@@ -368,7 +381,7 @@ class _HomeViewState extends State<HomeView> {
                 color: Theme.of(context).primaryColor,
               ),
               title: Text(
-                'Delete',
+                t.homeViewDelete,
                 style: TextStyle(color: Theme.of(context).primaryColor),
               ),
               onTap: () {
@@ -386,7 +399,7 @@ class _HomeViewState extends State<HomeView> {
                 });
               },
             ),
-            SizedBox(height: 30.0),
+            const SizedBox(height: 30.0),
           ],
         );
       },
@@ -394,6 +407,8 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void _showFileOptionsMenu(BuildContext context, MediaFile file) {
+    final t = AppLocalizations.of(context)!;
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -405,14 +420,14 @@ class _HomeViewState extends State<HomeView> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              SizedBox(height: 10.0),
+              const SizedBox(height: 10.0),
               ListTile(
                 leading: Icon(
                   Icons.edit,
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(
-                  'Edit',
+                  t.homeViewEdit,
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
                 onTap: () {
@@ -436,7 +451,7 @@ class _HomeViewState extends State<HomeView> {
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(
-                  'Delete',
+                  t.homeViewDelete,
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
                 onTap: () {
@@ -460,7 +475,7 @@ class _HomeViewState extends State<HomeView> {
                   color: Theme.of(context).primaryColor,
                 ),
                 title: Text(
-                  'Move',
+                  t.homeViewMove,
                   style: TextStyle(color: Theme.of(context).primaryColor),
                 ),
                 onTap: () {
@@ -478,7 +493,7 @@ class _HomeViewState extends State<HomeView> {
                   });
                 },
               ),
-              SizedBox(height: 30.0),
+              const SizedBox(height: 30.0),
             ],
           ),
         );

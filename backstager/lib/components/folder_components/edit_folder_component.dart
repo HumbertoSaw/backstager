@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/folder_dao.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFolder.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,6 +44,7 @@ class _EditFolderComponentState extends State<EditFolderComponent> {
   }
 
   Future<void> _saveChanges() async {
+    final t = AppLocalizations.of(context)!;
     final newName = _nameController.text.trim();
 
     if (newName.isEmpty ||
@@ -54,11 +56,9 @@ class _EditFolderComponentState extends State<EditFolderComponent> {
     setState(() => _isSaving = true);
 
     try {
-      final newFolderName = newName;
-
       final updatedFolder = MediaFolder(
         id: widget.folder.id,
-        name: newFolderName,
+        name: newName,
         coverImagePath: _selectedImage?.path ?? widget.folder.coverImagePath,
       );
 
@@ -68,8 +68,8 @@ class _EditFolderComponentState extends State<EditFolderComponent> {
         SnackBar(
           content: Text(
             _selectedImage != null
-                ? 'Folder and image updated successfully'
-                : 'Folder renamed successfully',
+                ? t.editFolderViewSuccessUpdate
+                : t.editFolderViewSuccessRename,
           ),
         ),
       );
@@ -94,9 +94,11 @@ class _EditFolderComponentState extends State<EditFolderComponent> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return AlertDialog(
       title: Text(
-        'Edit Folder',
+        t.editFolderViewTitle,
         style: TextStyle(color: Theme.of(context).primaryColor),
       ),
       content: SingleChildScrollView(
@@ -106,16 +108,16 @@ class _EditFolderComponentState extends State<EditFolderComponent> {
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: 'Change name',
-                hintText: widget.folder.name,
+                labelText: t.editFolderViewNameLabel,
+                hintText: t.editFolderViewNameHint,
                 border: const OutlineInputBorder(),
               ),
               autofocus: true,
             ),
             const SizedBox(height: 16),
-            const Text(
-              'Folder Cover Image (Optional)',
-              style: TextStyle(fontWeight: FontWeight.w500),
+            Text(
+              t.editFolderViewCoverLabel,
+              style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
             Center(
@@ -138,7 +140,7 @@ class _EditFolderComponentState extends State<EditFolderComponent> {
                       width: 1,
                     ),
                   ),
-                  child: _buildImagePreview(),
+                  child: _buildImagePreview(t),
                 ),
               ),
             ),
@@ -153,17 +155,17 @@ class _EditFolderComponentState extends State<EditFolderComponent> {
       actions: [
         TextButton(
           onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
+          child: Text(t.editFolderViewCancel),
         ),
         ElevatedButton(
           onPressed: _isSaving ? null : _saveChanges,
-          child: const Text('Save'),
+          child: Text(t.editFolderViewSave),
         ),
       ],
     );
   }
 
-  Widget _buildImagePreview() {
+  Widget _buildImagePreview(AppLocalizations t) {
     if (_selectedImage != null) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -180,10 +182,13 @@ class _EditFolderComponentState extends State<EditFolderComponent> {
     } else {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.image, size: 40, color: Colors.grey),
-          SizedBox(height: 8),
-          Text('Tap to select image', style: TextStyle(color: Colors.grey)),
+        children: [
+          const Icon(Icons.image, size: 40, color: Colors.grey),
+          const SizedBox(height: 8),
+          Text(
+            t.editFolderViewSelectImage,
+            style: const TextStyle(color: Colors.grey),
+          ),
         ],
       );
     }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:backstager/database/database_conn.dart';
 import 'package:backstager/database/folder_dao.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaFolder.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -34,9 +35,11 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
   }
 
   Future<void> _createNewFolder(String name, File? imageFile) async {
+    final t = AppLocalizations.of(context)!;
+
     try {
       if (name.isEmpty) {
-        throw Exception('Folder name cannot be empty');
+        throw Exception(t.createFolderViewEmptyNameError);
       }
 
       String? imagePath;
@@ -55,9 +58,7 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
       }
 
       final newFolder = MediaFolder(name: name, coverImagePath: imagePath);
-
       await folderDao.insertMediaFolder(newFolder);
-
       widget.onFolderCreated();
 
       if (mounted) {
@@ -83,6 +84,8 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       elevation: 4,
@@ -96,9 +99,12 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Create New Folder',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Text(
+                    t.createFolderViewTitle,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -111,8 +117,8 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Folder Name',
-                  hintText: 'Enter folder name',
+                  labelText: t.createFolderViewNameLabel,
+                  hintText: t.createFolderViewNameHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -123,9 +129,9 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Folder Cover Image (Optional)',
-                style: TextStyle(fontWeight: FontWeight.w500),
+              Text(
+                t.createFolderViewCoverLabel,
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               Center(
@@ -158,12 +164,16 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
                           )
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(Icons.image, size: 40, color: Colors.grey),
-                              SizedBox(height: 8),
+                            children: [
+                              const Icon(
+                                Icons.image,
+                                size: 40,
+                                color: Colors.grey,
+                              ),
+                              const SizedBox(height: 8),
                               Text(
-                                'Tap to select image',
-                                style: TextStyle(color: Colors.grey),
+                                t.createFolderViewSelectImage,
+                                style: const TextStyle(color: Colors.grey),
                               ),
                             ],
                           ),
@@ -182,7 +192,7 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
                         vertical: 12,
                       ),
                     ),
-                    child: const Text('Cancel'),
+                    child: Text(t.createFolderViewCancel),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
@@ -190,8 +200,8 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
                       final name = _nameController.text.trim();
                       if (name.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Please enter a folder name'),
+                          SnackBar(
+                            content: Text(t.createFolderViewEmptyNameError),
                             behavior: SnackBarBehavior.floating,
                           ),
                         );
@@ -210,7 +220,7 @@ class _CreateFolderComponentState extends State<CreateFolderComponent> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text('Create Folder'),
+                    child: Text(t.createFolderViewCreate),
                   ),
                 ],
               ),

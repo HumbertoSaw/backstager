@@ -1,3 +1,4 @@
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -71,6 +72,8 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: Center(
         child: Padding(
@@ -86,18 +89,17 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
               const SizedBox(height: 24),
               Text(
                 textAlign: TextAlign.center,
-                'Audio, Microphone & Image Access Required',
+                t.permissionScreenTitle,
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 16),
-              const Text(
-                'Backstager needs permission to access audio files, the microphone and images on your device. '
-                'This is required to load, create audio files and save clips.',
+              Text(
+                t.permissionScreenDescription,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 16),
               ),
               const SizedBox(height: 32),
               if (_isCheckingPermissions)
@@ -113,7 +115,7 @@ class _PermissionsScreenState extends State<PermissionsScreen> {
                     ),
                   ),
                   onPressed: _requestPermissions,
-                  child: const Text('Allow Access'),
+                  child: Text(t.permissionScreenAllowAccess),
                 ),
             ],
           ),

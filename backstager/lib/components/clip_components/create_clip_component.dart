@@ -1,5 +1,6 @@
 import 'package:backstager/database/clip_dao.dart';
 import 'package:backstager/database/database_conn.dart';
+import 'package:backstager/l10n/app_localizations.dart';
 import 'package:backstager/models/MediaClip.dart';
 import 'package:backstager/models/MediaFile.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +28,7 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
   Color? _selectedColor;
   double _audioLength = 0;
   bool _isLoading = true;
+  late AppLocalizations t; // Store localization here
 
   final List<Color> _colorOptions = [
     Colors.red,
@@ -39,6 +41,13 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
   @override
   void initState() {
     super.initState();
+    // Don't call _getAudioLength here
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    t = AppLocalizations.of(context)!; // Now context is safe to use
     _getAudioLength();
   }
 
@@ -52,11 +61,13 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
       final duration = await _audioPlayer.getDuration();
 
       if (duration != null) {
-        setState(() {
-          _audioLength = duration.inSeconds.toDouble();
-          _clipRange = RangeValues(0, _audioLength);
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _audioLength = duration.inSeconds.toDouble();
+            _clipRange = RangeValues(0, _audioLength);
+            _isLoading = false;
+          });
+        }
       } else {
         throw Exception('Could not determine audio length');
       }
@@ -85,7 +96,13 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
     try {
       final name = _nameController.text.trim();
       if (name.isEmpty) {
-        throw Exception('Clip name cannot be empty');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(t.createClipViewErrorEmptyName),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        return;
       }
 
       final clip = MediaClip(
@@ -98,12 +115,12 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
 
       await clipDao.insertMediaClip(clip);
       widget.onClipCreated();
-      Navigator.pop(context);
+      if (mounted) Navigator.pop(context);
     } catch (e) {
       debugPrint('Error creating clip: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to create clip: ${e.toString()}'),
+          content: Text('${t.createClipViewErrorCreate} ${e.toString()}'),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -125,9 +142,12 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    'Create New Clip',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Text(
+                    t.createClipViewTitle,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
@@ -140,8 +160,8 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  labelText: 'Clip Name',
-                  hintText: 'Enter clip name',
+                  labelText: t.createClipViewClipNameLabel,
+                  hintText: t.createClipViewClipNameHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -152,9 +172,9 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Clip color (Optional)',
-                style: TextStyle(fontWeight: FontWeight.w500),
+              Text(
+                t.createClipViewClipColorLabel,
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               Row(
@@ -184,9 +204,9 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
                 }).toList(),
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Clip Range',
-                style: TextStyle(fontWeight: FontWeight.w500),
+              Text(
+                t.createClipViewClipRangeLabel,
+                style: const TextStyle(fontWeight: FontWeight.w500),
               ),
               const SizedBox(height: 8),
               _isLoading
@@ -208,20 +228,6 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
                             });
                           },
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                'Start: ${_clipRange.start.toStringAsFixed(1)}s',
-                              ),
-                              Text(
-                                'End: ${_clipRange.end.toStringAsFixed(1)}s',
-                              ),
-                            ],
-                          ),
-                        ),
                       ],
                     ),
               const SizedBox(height: 24),
@@ -236,7 +242,7 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
                         vertical: 12,
                       ),
                     ),
-                    child: const Text('Cancel'),
+                    child: Text(t.createClipViewCancel),
                   ),
                   const SizedBox(width: 12),
                   ElevatedButton(
@@ -250,7 +256,7 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
-                    child: const Text('Create Clip'),
+                    child: Text(t.createClipViewCreate),
                   ),
                 ],
               ),
