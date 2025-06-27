@@ -25,6 +25,7 @@ is stored exclusively on the User's device. This data can be completely erased b
 The Application requires access to device storage solely for the following purposes:
 - Organizing media files into user-defined categories
 - Getting image files for folder and audio customization
+- Creating and storing audio files.
 - Enabling audio playback functionality
 - Creating and storing audio clip highlights
 
@@ -38,6 +39,7 @@ The Application requests the following permissions:
 |------------|---------|--------------|
 | `READ_MEDIA_IMAGES` | To access image files for folder and file customization | User must explicitly grant; can be revoked at any time |
 | `READ_MEDIA_AUDIO` | To access, play, and create highlights from audio files for rehearsal purposes | User must explicitly grant; can be revoked at any time |
+| `RECORD_AUDIO` | To access the microphone to create audio files to play and customize in the app | User must explicitly grant; can be revoked at any time |
 
 ## 4. Data Security
 
