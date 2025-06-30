@@ -28,8 +28,7 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
   Color? _selectedColor;
   double _audioLength = 0;
   bool _isLoading = true;
-  late AppLocalizations t; // Store localization here
-
+  late AppLocalizations t;
   final List<Color> _colorOptions = [
     Colors.red,
     Colors.blue,
@@ -41,13 +40,12 @@ class _CreateClipComponentState extends State<CreateClipComponent> {
   @override
   void initState() {
     super.initState();
-    // Don't call _getAudioLength here
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    t = AppLocalizations.of(context)!; // Now context is safe to use
+    t = AppLocalizations.of(context)!;
     _getAudioLength();
   }
 

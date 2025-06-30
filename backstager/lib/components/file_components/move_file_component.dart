@@ -28,7 +28,6 @@ class _MoveFileComponentState extends State<MoveFileComponent> {
   @override
   void initState() {
     super.initState();
-    // Don't load folders here - wait for didChangeDependencies
   }
 
   @override
